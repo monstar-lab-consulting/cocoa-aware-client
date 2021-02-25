@@ -1,4 +1,3 @@
-
 include ':aware-core', ':aware-phone', ":aware-tests"
 
 include ':com.aware.plugin.device_usage'
