@@ -34,3 +34,6 @@
 [submodule "com.aware.plugin.sentimental"]
 	path = com.aware.plugin.sentimental
 	url = https://github.com/denzilferreira/com.aware.plugin.sentimental.git
+[submodule "com.aware.plugin.beacon"]
+	path = com.aware.plugin.beacon
+	url = git@github.com:monstar-lab-consulting/cocoa-com.aware.plugin.beacon.git
