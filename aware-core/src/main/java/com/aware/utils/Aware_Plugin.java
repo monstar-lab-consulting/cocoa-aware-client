@@ -3,12 +3,18 @@ package com.aware.utils;
 
 import android.Manifest;
 import android.app.Service;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+
 import androidx.core.content.PermissionChecker;
+
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
 import com.aware.ui.PermissionsHandler;
@@ -60,7 +66,7 @@ public class Aware_Plugin extends Service {
     /**
      * Integration with sync adapters
      */
-    public String AUTHORITY = "";
+    public static String AUTHORITY = "";
 
     @Override
     public void onCreate() {
@@ -154,9 +160,10 @@ public class Aware_Plugin extends Service {
      * - ACTION_AWARE_CURRENT_CONTEXT: returns current plugin's context
      * - ACTION_AWARE_STOP_PLUGINS: stops this plugin
      * - ACTION_AWARE_SYNC_DATA: sends the data to the server
+     *
      * @author denzil
      */
-    public static class ContextBroadcaster extends BroadcastReceiver {
+    public class ContextBroadcaster extends BroadcastReceiver {
         private ContextProducer cp;
         private String tag;
         private String provider;
@@ -183,16 +190,16 @@ public class Aware_Plugin extends Service {
                     e.printStackTrace();
                 }
             }
-            if (intent.getAction().equals(Aware.ACTION_AWARE_SYNC_DATA) && provider.length() > 0) {
+            if (intent.getAction().equals(Aware.ACTION_AWARE_SYNC_DATA) && AUTHORITY.length() > 0) {
                 Bundle sync = new Bundle();
                 sync.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
                 sync.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-                ContentResolver.requestSync(Aware.getAWAREAccount(context), provider, sync);
+                ContentResolver.requestSync(Aware.getAWAREAccount(context), AUTHORITY, sync);
             }
         }
     }
 
-    private static ContextBroadcaster contextBroadcaster = null;
+    private ContextBroadcaster contextBroadcaster = null;
 
     @Override
     public IBinder onBind(Intent arg0) {
