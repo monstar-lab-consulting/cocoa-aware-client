@@ -1,6 +1,10 @@
 package com.aware.phone.ui;
 
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -10,12 +14,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
+
 import com.aware.Aware;
 import com.aware.phone.R;
 import com.aware.providers.Aware_Provider.Aware_Plugins;
 import com.aware.utils.Aware_Plugin;
 import com.aware.utils.DatabaseHelper;
 import com.aware.utils.PluginsManager;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -184,6 +190,8 @@ public class Stream_UI extends Aware_Activity {
                             convertView = new com.aware.plugin.google.fused_location.ContextCard().getContextCard(mContext);
                         } else if (cards.getJSONObject(position).getString(Aware_Plugins.PLUGIN_PACKAGE_NAME).equals("com.aware.plugin.openweather")) {
                             convertView = new com.aware.plugin.openweather.ContextCard().getContextCard(mContext);
+                        } else if (cards.getJSONObject(position).getString(Aware_Plugins.PLUGIN_PACKAGE_NAME).equals("com.aware.plugin.beacon")) {
+                            convertView = new com.aware.plugin.beacon.ContextCard().getContextCard(mContext);
                         }
                     } else {
                         convertView = Aware.getContextCard(mContext, cards.getJSONObject(position).getString(Aware_Plugins.PLUGIN_PACKAGE_NAME));

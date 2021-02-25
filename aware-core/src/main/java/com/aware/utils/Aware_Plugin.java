@@ -66,7 +66,7 @@ public class Aware_Plugin extends Service {
     /**
      * Integration with sync adapters
      */
-    public static String AUTHORITY = "";
+    public String AUTHORITY = "";
 
     @Override
     public void onCreate() {
