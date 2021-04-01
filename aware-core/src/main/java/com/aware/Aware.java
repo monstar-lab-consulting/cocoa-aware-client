@@ -4,8 +4,22 @@ package com.aware;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.*;
-import android.content.*;
+import android.app.ActivityManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.app.UiModeManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.PeriodicSync;
+import android.content.SharedPreferences;
+import android.content.SyncRequest;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -22,7 +36,13 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.*;
+import android.os.AsyncTask;
+import android.os.BatteryManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.IBinder;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -44,18 +64,36 @@ import com.aware.providers.Aware_Provider.Aware_Plugins;
 import com.aware.providers.Aware_Provider.Aware_Settings;
 import com.aware.providers.Battery_Provider;
 import com.aware.providers.Scheduler_Provider;
-import com.aware.utils.*;
-
-import dalvik.system.DexFile;
+import com.aware.utils.Aware_Accounts;
+import com.aware.utils.Aware_Plugin;
+import com.aware.utils.DownloadPluginService;
+import com.aware.utils.Http;
+import com.aware.utils.Https;
+import com.aware.utils.PluginsManager;
+import com.aware.utils.SSLManager;
+import com.aware.utils.Scheduler;
+import com.aware.utils.StudyUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import dalvik.system.DexFile;
 
 /**
  * Main AWARE framework service. awareContext will start and manage all the services and settings.
@@ -1868,6 +1906,14 @@ public class Aware extends Service {
         }
     }
 
+    public static void reset(Context context, boolean isRestartService) {
+        reset(context);
+        if (isRestartService) {
+            Intent aware = new Intent(context, Aware.class);
+            context.startService(aware);
+        }
+    }
+
     public static void reset(Context context) {
         String device_id = Aware.getSetting(context, Aware_Preferences.DEVICE_ID);
         String device_label = Aware.getSetting(context, Aware_Preferences.DEVICE_LABEL);
@@ -1913,9 +1959,6 @@ public class Aware extends Service {
             }
             if (Aware.DEBUG) Log.w(TAG, "AWARE plugins disabled...");
         }
-
-        Intent aware = new Intent(context, Aware.class);
-        context.startService(aware);
     }
 
     /**
