@@ -2333,8 +2333,12 @@ public class Aware extends Service {
 
             //Guarantees that all plugins also come back up again on reboot
             if (intent.getAction().equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)) {
-                Intent aware = new Intent(context, Aware.class);
-                context.startService(aware);
+                try {
+                    Intent aware = new Intent(context, Aware.class);
+                    context.startService(aware);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
