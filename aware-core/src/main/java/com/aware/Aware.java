@@ -101,7 +101,7 @@ import dalvik.system.DexFile;
  * @author denzil
  */
 public class Aware extends Service {
-    // Security snWEy2h0R5JStRsayR+6CVl9qh2KAmRDq2Q9l0lr
+    // snWEy2h0R5JStRsayR+6CVl9qh2KAmRDq2Q9l0lr
     /**
      * Debug flag (default = false).
      */
